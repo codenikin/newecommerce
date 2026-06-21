@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="64" viewBox="0 0 220 64" role="img" aria-labelledby="title desc">
+  <title id="title">Acme Chat logo</title>
+  <desc id="desc">Sample brand logo</desc>
+  <rect width="220" height="64" rx="12" fill="#0F766E"/>
+  <circle cx="34" cy="32" r="16" fill="#CCFBF1"/>
+  <path d="M27 32h14M34 25v14" stroke="#115E59" stroke-width="3" stroke-linecap="round"/>
+  <text x="62" y="40" fill="#FFFFFF" font-size="20" font-family="Verdana, sans-serif" font-weight="700">ACME CHAT</text>
+</svg>

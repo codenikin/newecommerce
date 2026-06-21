@@ -1,18 +1,19 @@
 import React from 'react'
-import './styles.css'
-
-export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
-}
+import './global.css'
+import { Header } from '@/components/Header'
+import { Providers } from '@/providers'
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
+      <body className="bg-white text-black">
+        <Providers>
+          <Header />
+
+          <main>{children}</main>
+        </Providers>
       </body>
     </html>
   )

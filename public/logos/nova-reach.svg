@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="64" viewBox="0 0 220 64" role="img" aria-labelledby="title desc">
+  <title id="title">Nova Reach logo</title>
+  <desc id="desc">Sample brand logo</desc>
+  <rect width="220" height="64" rx="12" fill="#1D4ED8"/>
+  <path d="M24 40l10-18 10 18" fill="none" stroke="#BFDBFE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="34" cy="34" r="4" fill="#BFDBFE"/>
+  <text x="62" y="40" fill="#FFFFFF" font-size="20" font-family="Verdana, sans-serif" font-weight="700">NOVA REACH</text>
+</svg>

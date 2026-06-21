@@ -12,5 +12,16 @@ export const Media: CollectionConfig = {
       required: true,
     },
   ],
-  upload: true,
+  upload: {
+    focalPoint: true,
+
+    imageSizes: [
+      {
+        name: 'thumbnail',
+        width: 600,
+        height: 600,
+        crop: 'center',
+      },
+    ],
+  },
 }
