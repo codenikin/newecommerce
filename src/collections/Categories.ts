@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 import { adminOnly } from '@/access/adminOnly'
+
+import { DefaultDocumentIDType, slugField, Where } from 'payload'
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -42,7 +44,12 @@ export const Categories: CollectionConfig = {
       collection: 'products',
       on: 'categories',
     },
-
+    {
+      name: 'subcategories',
+      type: 'join',
+      collection: 'subcategories',
+      on: 'categories',
+    },
     {
       type: 'tabs',
       tabs: [
@@ -86,5 +93,6 @@ export const Categories: CollectionConfig = {
         },
       ],
     },
+    slugField(),
   ],
 }

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { slugField, type CollectionConfig } from 'payload'
 import { adminOnly } from '@/access/adminOnly'
 export const Subcategories: CollectionConfig = {
   slug: 'subcategories',
@@ -40,5 +40,6 @@ export const Subcategories: CollectionConfig = {
       relationTo: 'categories',
       hasMany: true,
     },
+    slugField(),
   ],
 }

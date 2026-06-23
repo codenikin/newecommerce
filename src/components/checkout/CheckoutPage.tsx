@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import { cssVariables } from '@/cssVariables'
 import { CheckoutForm } from '@/components/forms/CheckoutForm'
-import { useAddresses, useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
+import { useAddresses, useCart, usePayments } from '@shadowmkj/plugin-ecommerce/client/react'
 import { CheckoutAddresses } from '@/components/checkout/CheckoutAddresses'
 import { CreateAddressModal } from '@/components/addresses/CreateAddressModal'
 import { Address } from '@/payload-types'
@@ -24,30 +24,24 @@ import { AddressItem } from '@/components/addresses/AddressItem'
 import { FormItem } from '@/components/forms/FormItem'
 import { toast } from 'sonner'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-
 const apiKey = `${process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}`
 const stripe = loadStripe(apiKey)
-
 export const CheckoutPage: React.FC = () => {
   const { user } = useAuth()
   const router = useRouter()
   const { cart, clearCart } = useCart()
   const [error, setError] = useState<null | string>(null)
   const { theme } = useTheme()
-  /**
-   * State to manage the email input for guest checkout.
-   */
   const [email, setEmail] = useState('')
   const [emailEditable, setEmailEditable] = useState(true)
   const [paymentData, setPaymentData] = useState<null | Record<string, unknown>>(null)
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'cod'>('stripe')
-  const { initiatePayment } = usePayments()
+  const { initiatePayment, confirmOrder } = usePayments()
   const { addresses } = useAddresses()
   const [shippingAddress, setShippingAddress] = useState<Partial<Address>>()
   const [billingAddress, setBillingAddress] = useState<Partial<Address>>()
   const [billingAddressSameAsShipping, setBillingAddressSameAsShipping] = useState(true)
   const [isProcessingPayment, setProcessingPayment] = useState(false)
-
+  const [paymentMethod, setPaymentMethod] = useState('cod')
   const cartIsEmpty = !cart || !cart.items || !cart.items.length
 
   const canGoToPayment = Boolean(
@@ -74,11 +68,10 @@ export const CheckoutPage: React.FC = () => {
       setEmailEditable(true)
     }
   }, [])
-
   const initiatePaymentIntent = useCallback(
-    async (paymentID: string) => {
+    async (method: string) => {
       try {
-        const paymentData = (await initiatePayment(paymentID, {
+        const paymentData = (await initiatePayment(method, {
           additionalData: {
             ...(email ? { customerEmail: email } : {}),
             billingAddress,
@@ -86,25 +79,107 @@ export const CheckoutPage: React.FC = () => {
           },
         })) as Record<string, unknown>
 
-        if (paymentData) {
-          setPaymentData(paymentData)
+        if (!paymentData) return
+
+        setPaymentData(paymentData)
+
+        if (method === 'cod') {
+          const result = (await confirmOrder('cod', {
+            additionalData: {
+              paymentIntentID: paymentData.paymentIntentID,
+            },
+          })) as { orderID: string; accessToken?: string }
+
+          if (result?.orderID) {
+            clearCart()
+
+            const queryParams = new URLSearchParams()
+
+            if (email) queryParams.set('email', email)
+            if (result.accessToken) {
+              queryParams.set('accessToken', result.accessToken)
+            }
+
+            router.push(`/orders/${result.orderID}?${queryParams.toString()}`)
+          }
         }
       } catch (error) {
         const errorData = error instanceof Error ? JSON.parse(error.message) : {}
-        let errorMessage = 'An error occurred while initiating payment.'
+
+        let errorMessage = 'Payment failed'
 
         if (errorData?.cause?.code === 'OutOfStock') {
-          errorMessage = 'One or more items in your cart are out of stock.'
+          errorMessage = 'Some items are out of stock'
         }
 
         setError(errorMessage)
         toast.error(errorMessage)
       }
     },
-    [billingAddress, billingAddressSameAsShipping, shippingAddress],
+    [
+      email,
+      billingAddress,
+      shippingAddress,
+      billingAddressSameAsShipping,
+      initiatePayment,
+      confirmOrder,
+    ],
   )
 
-  if (!stripe) return null
+  // const initiatePaymentIntent = useCallback(
+  //   async (paymentID: string) => {
+  //     try {
+  //       const paymentData = (await initiatePayment(paymentID, {
+  //         additionalData: {
+  //           ...(email ? { customerEmail: email } : {}),
+  //           billingAddress,
+  //           shippingAddress: billingAddressSameAsShipping ? billingAddress : shippingAddress,
+  //         },
+  //       })) as Record<string, unknown>
+
+  //       if (paymentData) {
+  //         setPaymentData(paymentData)
+  //       }
+  //       if (paymentData.method == 'cod') {
+  //         confirmOrder('cod', {
+  //           additionalData: {
+  //             paymentIntentID: paymentData.paymentIntentID,
+  //           },
+  //         }).then((result: any) => {
+  //           if (result && typeof result === 'object' && 'orderID' in result && result.orderID) {
+  //             const accessToken = 'accessToken' in result ? (result.accessToken as string) : ''
+  //             const queryParams = new URLSearchParams()
+
+  //             if (email) {
+  //               queryParams.set('email', email)
+  //             }
+  //             if (accessToken) {
+  //               queryParams.set('accessToken', accessToken)
+  //             }
+
+  //             clearCart()
+
+  //             const queryString = queryParams.toString()
+  //             router.push(`/orders/${result.orderID}${queryString ? `?${queryString}` : ''}`)
+  //           }
+  //         })
+  //       }
+  //     } catch (error) {
+  //       const errorData = error instanceof Error ? JSON.parse(error.message) : {}
+  //       let errorMessage = 'An error occurred while initiating payment.'
+
+  //       if (errorData?.cause?.code === 'OutOfStock') {
+  //         errorMessage = 'One or more items in your cart are out of stock.'
+  //       }
+
+  //       setError(errorMessage)
+  //       toast.error(errorMessage)
+  //     }
+  //   },
+  //   [billingAddress, billingAddressSameAsShipping, shippingAddress],
+  // )
+
+  if (!stripe && paymentMethod == 'stripe') return null
 
   if (cartIsEmpty && isProcessingPayment) {
     return (
@@ -127,11 +202,11 @@ export const CheckoutPage: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-stretch justify-stretch my-8 px-8 md:flex-row grow gap-10 md:gap-6 lg:gap-8 mt-32">
-      <div className="basis-full lg:basis-2/3 flex flex-col gap-8 justify-stretch border border-primary rounded-md p-8">
+    <div className="flex flex-col items-stretch justify-stretch my-8 px-8 md:flex-row grow gap-10 md:gap-6 lg:gap-8 ">
+      <div className="basis-full lg:basis-2/3 flex flex-col gap-8 justify-stretch border border-gray-400 rounded-md p-8">
         <h2 className="font-medium text-3xl">Contact</h2>
         {!user && (
-          <div className=" bg-accent dark:bg-black rounded-lg p-4 w-full flex items-center border border-gray-300">
+          <div className=" bg-accent dark:bg-black rounded-lg p-4 w-full flex items-center border border-gray-200">
             <div className="prose dark:prose-invert">
               <Button asChild className="no-underline text-inherit" variant="outline">
                 <Link href="/login">Log in</Link>
@@ -274,6 +349,7 @@ export const CheckoutPage: React.FC = () => {
             <input
               type="radio"
               checked={paymentMethod === 'stripe'}
+              disabled={!canGoToPayment}
               onChange={() => setPaymentMethod('stripe')}
             />
             Pay Online (Stripe)
@@ -283,12 +359,56 @@ export const CheckoutPage: React.FC = () => {
             <input
               type="radio"
               checked={paymentMethod === 'cod'}
+              disabled={!canGoToPayment}
               onChange={() => setPaymentMethod('cod')}
             />
             Cash on Delivery
           </label>
+
+          <Button
+            disabled={!canGoToPayment}
+            onClick={() => {
+              if (paymentMethod === 'stripe') {
+                void initiatePaymentIntent('stripe')
+              } else {
+                void initiatePaymentIntent('cod')
+              }
+            }}
+          >
+            Continue
+          </Button>
         </div>
-        {!paymentData && (
+        {/* <div className="space-y-3">
+          <h2 className="font-medium text-3xl">Payment Method</h2>
+
+          <label className="flex items-center gap-2">
+            {!paymentData && (
+              <input
+                type="radio"
+                className="self-start"
+                disabled={!canGoToPayment}
+                onClick={(e) => {
+                  e.preventDefault()
+                  void initiatePaymentIntent('stripe')
+                }}
+              />
+            )}
+            Pay Online (Stripe)
+          </label>
+          {!paymentData?.['clientSecret'] && error && (
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                onClick={(e) => {
+                  e.preventDefault()
+                  router.refresh()
+                }}
+              />
+              Cash on Delivery
+            </label>
+          )}
+        </div> */}
+        {/* {!paymentData && (
           <Button
             className="self-start"
             disabled={false}
@@ -336,7 +456,7 @@ export const CheckoutPage: React.FC = () => {
               Try again
             </Button>
           </div>
-        )}
+        )} */}
 
         <Suspense fallback={<React.Fragment />}>
           {/* @ts-ignore */}
@@ -398,7 +518,7 @@ export const CheckoutPage: React.FC = () => {
       </div>
 
       {!cartIsEmpty && (
-        <div className="basis-full lg:basis-1/3 lg:pl-8 bg-primary/5 flex flex-col gap-8 border border-primary rounded-md p-8">
+        <div className="basis-full lg:basis-1/3 lg:pl-8 bg-primary/5 flex flex-col gap-8 border border-gray-400 rounded-md p-8">
           <h2 className="text-3xl font-medium">Your cart</h2>
           {cart?.items?.map((item, index) => {
             if (typeof item.product === 'object' && item.product) {
@@ -443,7 +563,7 @@ export const CheckoutPage: React.FC = () => {
 
               return (
                 <div
-                  className="flex items-start gap-4 border border-primary rounded-md p-2"
+                  className="flex items-start gap-4 border border-gray-400 rounded-md p-2"
                   key={index}
                 >
                   <div className="flex items-stretch justify-stretch h-20 w-20 p-2 rounded-lg border">

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import type { Product, Variant } from '@/payload-types'
-import { useCart } from '@payloadcms/plugin-ecommerce/client/react'
+import { useCart } from '@shadowmkj/plugin-ecommerce/client/react'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
 import React, { useCallback, useMemo } from 'react'

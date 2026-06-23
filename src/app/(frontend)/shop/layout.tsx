@@ -1,3 +1,4 @@
+import { Brand } from '@/components/layout/search/Brand'
 import { Categories } from '@/components/layout/search/Categories'
 import { FilterList } from '@/components/layout/search/filter'
 import { PriceRangeSlider } from '@/components/Rangeslider'
@@ -20,6 +21,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
         <div className="flex flex-col md:flex-row items-start justify-between gap-16 md:gap-4 mt-8">
           <div className="w-full flex-none flex flex-col gap-4 md:gap-8 basis-1/5">
             <Categories />
+            <Brand />
             <PriceRangeSlider />
             <FilterList list={sorting} title="Sort by" />
           </div>

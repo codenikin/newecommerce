@@ -37,25 +37,9 @@ export default async function Orders() {
 
   return (
     <>
-      {/* <div className="max-w-7xl w-full mx-auto flex flex-col border border-gray-900">
-        <h1 className="text-3xl font-medium mb-8">Orders</h1>
-        {(!orders || !Array.isArray(orders) || orders?.length === 0) && (
-          <p className="">You have no orders.</p>
-        )}
-
-        {orders && orders.length > 0 && (
-          <ul className="flex flex-col gap-6">
-            {orders?.map((order, index) => (
-              <li key={order.id}>
-                <OrderItem order={order} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
       <div className="w-full">
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6 border border-primary p-4 rounded-xl">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2 border border-primary p-4 rounded-lg">
             Orders
           </h1>
 
@@ -64,9 +48,12 @@ export default async function Orders() {
           )}
 
           {orders && orders.length > 0 && (
-            <ul className="flex flex-col divide-y divide-gray-100 ">
+            <ul className="flex flex-col divide-y divide-gray-100 gap-2 ">
               {orders.map((order) => (
-                <li key={order.id} className="py-4 first:pt-0 last:pb-0 border border-primary">
+                <li
+                  key={order.id}
+                  className="py-4 first:pt-0 last:pb-0 border border-primary rounded-lg"
+                >
                   <OrderItem order={order} />
                 </li>
               ))}

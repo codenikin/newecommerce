@@ -28,5 +28,14 @@ export const Brand: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
     },
+    {
+      name: 'products',
+      type: 'relationship',
+      relationTo: 'products',
+      hasMany: true,
+      admin: {
+        readOnly: true,
+      },
+    },
   ],
 }

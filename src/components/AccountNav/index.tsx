@@ -19,72 +19,8 @@ type NavItemProps = {
 export const AccountNav: React.FC<Props> = ({ className }) => {
   const pathname = usePathname()
 
-  //   return (
-  //     // <div className={clsx(className)}>
-  //     //   <ul className="flex flex-col gap-2">
-  //     //     <li>
-  //     //       <Button asChild variant="link">
-  //     //         <Link
-  //     //           href="/account"
-  //     //           className={clsx('text-primary/50 hover:text-primary hover:no-underline', {
-  //     //             'text-primary': pathname === '/account',
-  //     //           })}
-  //     //         >
-  //     //           Account settings
-  //     //         </Link>
-  //     //       </Button>
-  //     //     </li>
-
-  //     //     <li>
-  //     //       <Button asChild variant="link">
-  //     //         <Link
-  //     //           href="/account/addresses"
-  //     //           className={clsx('text-primary/50 hover:text-primary hover:no-underline', {
-  //     //             'text-primary': pathname === '/account/addresses',
-  //     //           })}
-  //     //         >
-  //     //           Addresses
-  //     //         </Link>
-  //     //       </Button>
-  //     //     </li>
-
-  //     //     <li>
-  //     //       <Button
-  //     //         asChild
-  //     //         variant="link"
-  //     //         className={clsx('text-primary/50 hover:text-primary hover:no-underline', {
-  //     //           'text-primary': pathname === '/orders' || pathname.includes('/orders'),
-  //     //         })}
-  //     //       >
-  //     //         <Link href="/orders">Orders</Link>
-  //     //       </Button>
-  //     //     </li>
-  //     //   </ul>
-
-  //     //   <hr className="w-full border-white/5" />
-
-  //     //   <Button
-  //     //     asChild
-  //     //     variant="link"
-  //     //     className={clsx('text-primary/50 hover:text-primary hover:no-underline', {
-  //     //       'text-primary': pathname === '/logout',
-  //     //     })}
-  //     //   >
-  //     //     <Link href="/logout">Log out</Link>
-  //     //   </Button>
-  //     // </div>
-  // 'use client'
-
-  // import { Button } from '@/components/ui/button'
-  // import clsx from 'clsx'
-  // import Link from 'next/link'
-  // import { usePathname } from 'next/navigation'
-
-  // export const AccountNav: React.FC<Props> = ({ className }) => {
-  //   const pathname = usePathname()
-
   return (
-    <div className="w-full md:w-64 flex flex-col gap-4 p-2 md:p-4 bg-white md:border md:border-gray-100 md:rounded-xl md:shadow-sm">
+    <div className="max-w-7x md:w-64 flex flex-col gap-4 p-2 md:p-4 bg-white md:border md:border-gray-100 md:rounded-xl md:shadow-sm">
       <nav className="grid grid-cols-3 gap-2 md:flex md:flex-col md:gap-1">
         <NavItem href="/account" active={pathname === '/account'}>
           Account settings
@@ -99,7 +35,7 @@ export const AccountNav: React.FC<Props> = ({ className }) => {
         </NavItem>
       </nav>
 
-      <div className="border-t border-gray-100 pt-4">
+      <div className="borde-t border-gray-400 pt-4">
         <NavItem href="/logout" danger>
           Log out
         </NavItem>

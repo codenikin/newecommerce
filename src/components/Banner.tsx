@@ -135,7 +135,7 @@ export default function Banner({ className }: BannerProps) {
                 </Link>
               </div>
 
-              <div className="w-full xl:h-1/2">
+              <div className="w-full xl:h-1/2 overflow-hidden">
                 <Link href="/single-product" className="block h-full">
                   <img src="/banner-3.png" alt="" className="w-full h-full object-contain" />
                 </Link>

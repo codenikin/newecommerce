@@ -1,13 +1,14 @@
 'use client'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useCart, usePayments } from '@payloadcms/plugin-ecommerce/client/react'
+import { useCart, usePayments } from '@shadowmkj/plugin-ecommerce/client/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 
 export const ConfirmOrder: React.FC = () => {
   const { confirmOrder } = usePayments()
   const { cart } = useCart()
+
   const searchParams = useSearchParams()
   const router = useRouter()
   // Ensure we only confirm the order once, even if the component re-renders
@@ -20,33 +21,7 @@ export const ConfirmOrder: React.FC = () => {
 
     const paymentIntentID = searchParams.get('payment_intent')
     const email = searchParams.get('email')
-    const method = searchParams.get('method')
-    if (method === 'cod') {
-      if (isConfirming.current) return
-      isConfirming.current = true
 
-      fetch('/api/orders/cod', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items: cart.items,
-          customerEmail: email,
-          amount: cart.subtotal,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data?.orderID) {
-            router.push(`/orders/${data.orderID}`)
-          } else {
-            isConfirming.current = false
-          }
-        })
-
-      return
-    }
     if (paymentIntentID) {
       if (!isConfirming.current) {
         isConfirming.current = true

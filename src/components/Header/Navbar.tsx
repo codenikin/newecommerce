@@ -2,17 +2,19 @@
 import { useEffect, useState } from 'react'
 import Arrow from '@/components/Helpers/icons/Arrow'
 import Link from 'next/link'
+import { Category } from '@/payload-types'
 
 interface Props {
   className?: string
   type?: number
+  categoryData?: Category[]
 }
 
-export default function Navbar({ className, type }: Props) {
+export default function Navbar({ className, type, categoryData }: Props) {
   const [categoryToggle, setToggle] = useState(false)
   const [height, setHeight] = useState('0px')
   const handler = () => setToggle((prev) => !prev)
-
+  // console.log('categoryData:', categoryData)
   useEffect(() => {
     if (categoryToggle) {
       const count = document.querySelectorAll('.categories-list li').length
@@ -49,10 +51,10 @@ export default function Navbar({ className, type }: Props) {
               </button>
 
               {/* OVERLAY */}
-              {categoryToggle && <div onClick={handler} className="fixed inset-0 z-10" />}
+              {categoryToggle && <div onClick={handler} className="fixed inset-0 z-0" />}
 
               {/* DROPDOWN */}
-              <div
+              {/* <div
                 style={{ height }}
                 className="absolute left-0 top-[53px] w-full overflow-hidden transition-all duration-500 ease-in-out bg-white shadow-md"
               >
@@ -70,22 +72,46 @@ export default function Navbar({ className, type }: Props) {
                     </Link>
                   </li>
                 </ul>
+              </div> */}
+              <div
+                style={{ height }}
+                className="absolute left-0 top-[53px] w-full overflow-hidden transition-all duration-500 ease-in-out bg-white shadow-md"
+              >
+                <ul className="categories-list">
+                  {categoryData?.map((category) => (
+                    <li key={category.id} className="border-t border-gray-100">
+                      <Link href={`/category/${category.slug}`}>
+                        <div
+                          className={`flex items-center justify-between px-5 h-10 text-base cursor-pointer transition-all duration-300 ${
+                            type === 3
+                              ? 'hover:bg-blue-600 hover:text-white'
+                              : 'hover:bg-yellow-300'
+                          }`}
+                        >
+                          <span className="text-base">{category.title}</span>
+                          <span>›</span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
             <div className="nav">
               <ul className="flex space-x-6 xl:space-x-10">
                 {/* HOME MENU */}
                 <li className="relative group py-5">
-                  {/* MAIN LINK */}
-                  <span
-                    className={`flex items-center text-sm font-semibold cursor-pointer ${
-                      type === 3 ? 'text-white' : 'text-black'
-                    }`}
-                  >
-                    Home
-                    <Arrow className="ml-2 w-3 h-3" />
-                  </span>
-
+                  <Link href="/">
+                    {/* MAIN LINK */}
+                    <span
+                      className={`flex items-center text-sm font-semibold cursor-pointer ${
+                        type === 3 ? 'text-white' : 'text-black'
+                      }`}
+                    >
+                      Home
+                      <Arrow className="ml-2 w-3 h-3" />
+                    </span>
+                  </Link>
                   {/* MEGA MENU */}
                   <div
                     className="
@@ -155,6 +181,52 @@ export default function Navbar({ className, type }: Props) {
                       </div>
                     </div>
                   </div>
+                </li>
+                <li className="relative group py-5">
+                  {/* MAIN LINK */}
+                  <span
+                    className={`flex items-center text-sm font-semibold cursor-pointer ${
+                      type === 3 ? 'text-white' : 'text-black'
+                    }`}
+                  >
+                    Collections
+                    <Arrow className="ml-2 w-3 h-3" />
+                  </span>
+                </li>
+                <li className="relative group py-5">
+                  {/* MAIN LINK */}
+                  <Link href="/shop">
+                    <span
+                      className={`flex items-center text-sm font-semibold cursor-pointer ${
+                        type === 3 ? 'text-white' : 'text-black'
+                      }`}
+                    >
+                      Products
+                      <Arrow className="ml-2 w-3 h-3" />
+                    </span>
+                  </Link>
+                </li>
+                <li className="relative group py-5">
+                  {/* MAIN LINK */}
+                  <span
+                    className={`flex items-center text-sm font-semibold cursor-pointer ${
+                      type === 3 ? 'text-white' : 'text-black'
+                    }`}
+                  >
+                    Contact
+                    <Arrow className="ml-2 w-3 h-3" />
+                  </span>
+                </li>
+                <li className="relative group py-5">
+                  {/* MAIN LINK */}
+                  <span
+                    className={`flex items-center text-sm font-semibold cursor-pointer ${
+                      type === 3 ? 'text-white' : 'text-black'
+                    }`}
+                  >
+                    About
+                    <Arrow className="ml-2 w-3 h-3" />
+                  </span>
                 </li>
               </ul>
             </div>

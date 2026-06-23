@@ -98,6 +98,7 @@ export interface Config {
     };
     categories: {
       products: 'products';
+      subcategories: 'subcategories';
     };
     subcategories: {
       products: 'products';
@@ -426,6 +427,7 @@ export interface Brand {
   title: string;
   description: string;
   brandImage?: (number | null) | Media;
+  products?: (number | Product)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -440,6 +442,11 @@ export interface Category {
   categoryImage?: (number | null) | Media;
   products?: {
     docs?: (number | Product)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  subcategories?: {
+    docs?: (number | Subcategory)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
@@ -462,6 +469,11 @@ export interface Category {
       | boolean
       | null;
   };
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -480,6 +492,11 @@ export interface Subcategory {
     totalDocs?: number;
   };
   categories?: (number | Category)[] | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -497,6 +514,16 @@ export interface Transaction {
         id?: string | null;
       }[]
     | null;
+  paymentMethod?: ('stripe' | 'cod') | null;
+  stripe?: {
+    customerID?: string | null;
+    paymentIntentID?: string | null;
+  };
+  cod?: {
+    customerID?: string | null;
+    paymentIntentID?: string | null;
+    codStatus?: ('Pending' | 'Paid') | null;
+  };
   billingAddress?: {
     title?: string | null;
     firstName?: string | null;
@@ -790,6 +817,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   description?: T;
   categoryImage?: T;
   products?: T;
+  subcategories?: T;
   meta?:
     | T
     | {
@@ -802,6 +830,8 @@ export interface CategoriesSelect<T extends boolean = true> {
     | {
         schemaMarkup?: T;
       };
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -813,6 +843,7 @@ export interface BrandsSelect<T extends boolean = true> {
   title?: T;
   description?: T;
   brandImage?: T;
+  products?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -826,6 +857,8 @@ export interface SubcategoriesSelect<T extends boolean = true> {
   SubcategoryImage?: T;
   products?: T;
   categories?: T;
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1006,6 +1039,20 @@ export interface TransactionsSelect<T extends boolean = true> {
         variant?: T;
         quantity?: T;
         id?: T;
+      };
+  paymentMethod?: T;
+  stripe?:
+    | T
+    | {
+        customerID?: T;
+        paymentIntentID?: T;
+      };
+  cod?:
+    | T
+    | {
+        customerID?: T;
+        paymentIntentID?: T;
+        codStatus?: T;
       };
   billingAddress?:
     | T

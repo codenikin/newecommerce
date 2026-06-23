@@ -1,23 +1,21 @@
-
 import Link from 'next/link'
 import Selectbox from '@/components/Helpers/Selectbox'
 import Arrow from '@/components/Helpers/icons/Arrow'
 export default function TopBar({ className }: { className?: string }) {
   return (
     <>
-  
       <div className={`w-full bg-white h-10  ${className || ''}`}>
         <div className="container-x mx-auto h-full">
           <div className="flex justify-between items-center h-full">
             <div className="topbar-nav">
               <ul className="flex space-x-6">
                 <li>
-                  <Link href="/">
+                  <Link href="/account">
                     <span className="text-xs leading-6 text-qblack font-500">Account</span>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/tracking-order">
+                  <Link href="/orders">
                     <span className="text-xs leading-6 text-qblack font-500">Track Order</span>
                   </Link>
                 </li>
@@ -32,7 +30,8 @@ export default function TopBar({ className }: { className?: string }) {
               <div className="flex space-x-6">
                 <div className="country-select flex space-x-1 items-center">
                   <div>
-                    <img src="/country-logo-16x16.png" 
+                    <img
+                      src="/country-logo-16x16.png"
                       height="16"
                       alt="country logo"
                       className="overflow-hidden rounded-full"

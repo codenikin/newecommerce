@@ -1,4 +1,4 @@
-export default function Instagram({ className }) {
+export default function Instagram({ className="" }) {
   return (
     <svg
       width="16"

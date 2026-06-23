@@ -33,13 +33,13 @@ export const CategoryItem: React.FC<Props> = ({ category }) => {
   }, [category.id, isActive, pathname, router, searchParams])
 
   return (
-    <button
+    <span
       onClick={() => setQuery()}
       className={clsx('hover:cursor-pointer', {
         ' underline': isActive,
       })}
     >
       {category.title}
-    </button>
+    </span>
   )
 }

@@ -4,16 +4,93 @@ import { generateMeta } from '@/lib/generateMeta'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Metadata } from 'next'
+
 export const dynamic = 'force-dynamic'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
+
 type Props = {
   searchParams: Promise<SearchParams>
 }
 
 export default async function ShopPage({ searchParams }: Props) {
-  const { q: searchValue, sort, category } = await searchParams
+  const {
+    q: searchValue,
+    sort,
+    category: categoryRaw,
+    subcategories: subcategoriesRaw,
+  } = await searchParams
+
   const payload = await getPayload({ config: configPromise })
+
+  // ----------------------------
+  // SAFE NORMALIZATION
+  // ----------------------------
+
+  const category = typeof categoryRaw === 'string' ? categoryRaw : undefined
+
+  const subcategoryIds =
+    typeof subcategoriesRaw === 'string'
+      ? subcategoriesRaw
+          .split(',')
+          .map((id) => id.trim())
+          .filter(Boolean)
+      : []
+
+  // ----------------------------
+  // BUILD FILTERS
+  // ----------------------------
+
+  const andFilters: any[] = [
+    {
+      _status: {
+        equals: 'published',
+      },
+    },
+  ]
+
+  // search filter
+  if (searchValue) {
+    andFilters.push({
+      or: [
+        {
+          title: {
+            like: searchValue,
+          },
+        },
+        // {
+        //   description: {
+        //     like: searchValue,
+        //   },
+        // },
+      ],
+    })
+  }
+
+  // category filter
+  if (category) {
+    andFilters.push({
+      categories: {
+        contains: category,
+      },
+    })
+  }
+
+  // subcategory filter (MULTI SAFE)
+  if (subcategoryIds.length > 0) {
+    andFilters.push({
+      or: subcategoryIds.map((id) => ({
+        subcategories: {
+          contains: String(id),
+        },
+      })),
+    })
+  }
+
+  // ----------------------------
+  // QUERY
+  // ----------------------------
+
   const products = await payload.find({
     collection: 'products',
     draft: false,
@@ -24,60 +101,25 @@ export default async function ShopPage({ searchParams }: Props) {
       slug: true,
       gallery: true,
       categories: true,
+      subcategories: true,
+      brand: true,
       priceInINR: true,
       OriginalPrice: true,
       createdAt: true,
       updatedAt: true,
     },
-    ...(sort ? { sort } : { sort: 'title' }),
-    ...(searchValue || category
-      ? {
-          where: {
-            and: [
-              {
-                _status: {
-                  equals: 'published',
-                },
-              },
-              ...(searchValue
-                ? [
-                    {
-                      or: [
-                        {
-                          title: {
-                            like: searchValue,
-                          },
-                        },
-                        {
-                          description: {
-                            like: searchValue,
-                          },
-                        },
-                      ],
-                    },
-                  ]
-                : []),
-              ...(category
-                ? [
-                    {
-                      categories: {
-                        contains: category,
-                      },
-                    },
-                  ]
-                : []),
-            ],
-          },
-        }
-      : {}),
+    sort: sort || 'title',
+    where: {
+      and: andFilters,
+    },
   })
-  console.log('products', products)
+
   const resultsText = products.docs.length > 1 ? 'results' : 'result'
-  const img = products.docs[0]?.gallery?.[0]?.image
 
   return (
     <div>
       <Search className="mb-8" />
+
       {searchValue ? (
         <p className="mb-4">
           {products.docs?.length === 0
@@ -91,16 +133,21 @@ export default async function ShopPage({ searchParams }: Props) {
         <p className="mb-4">No products found. Please try different filters.</p>
       )}
 
-      {products?.docs.length > 0 ? (
-        <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 relative py-3">
-          {products.docs.map((product) => {
-            return <ProductGridItem key={product.id} product={product} />
-          })}
+      {products.docs.length > 0 && (
+        <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 py-3">
+          {products.docs.map((product) => (
+            <ProductGridItem key={product.id} product={product} />
+          ))}
         </div>
-      ) : null}
+      )}
     </div>
   )
 }
+
+// ----------------------------
+// METADATA
+// ----------------------------
+
 export async function generateMetadata(): Promise<Metadata> {
   return generateMeta({
     title: 'Best Payload CMS templates for your next project',

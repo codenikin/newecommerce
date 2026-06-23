@@ -1,4 +1,4 @@
-import { CollectionOverride } from '@payloadcms/plugin-ecommerce/types'
+import { CollectionOverride } from '@shadowmkj/plugin-ecommerce/types'
 import {
   MetaDescriptionField,
   MetaImageField,
@@ -149,7 +149,7 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               name: 'relatedProducts',
               type: 'relationship',
               filterOptions: ({ id }) => {
-                if (id) {
+                if (!id) {
                   return {
                     id: {
                       not_in: [id],
@@ -216,6 +216,10 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
     {
       name: 'subcategories',
       type: 'relationship',
+      admin: {
+        position: 'sidebar',
+        sortOptions: 'title',
+      },
       hasMany: true,
       relationTo: 'subcategories',
     },

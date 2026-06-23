@@ -36,7 +36,7 @@ export function RelatedProducts({
 
       <div className="relative w-full h-75 md:h-112.5 overflow-hidden rounded-2xl mb-10 group mt-16">
         <img
-          src="/1.png"
+          src="banner-3.1.png"
           alt="Special Collection"
           className="
       w-full
@@ -51,7 +51,7 @@ export function RelatedProducts({
 
         <div className="absolute inset-0 bg-black/40" />
 
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+        <div className="absolute inset-0 flex flex-col items-start justify-center text-center px-6">
           <span className="text-sm uppercase tracking-[0.3em] text-white/80 mb-3">
             New Collection
           </span>

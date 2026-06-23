@@ -1,6 +1,7 @@
 import { seoPlugin } from '@payloadcms/plugin-seo'
-import { stripeAdapter } from '@payloadcms/plugin-ecommerce/payments/stripe'
-import { ecommercePlugin } from '@payloadcms/plugin-ecommerce'
+import { stripeAdapter } from '@shadowmkj/plugin-ecommerce/payments/stripe'
+import { codAdapter } from '@shadowmkj/plugin-ecommerce/payments/cod'
+import { ecommercePlugin } from '@shadowmkj/plugin-ecommerce'
 import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
 import { adminOnlyFieldAccess } from '@/access/adminOnlyFieldAccess'
 import { customerOnlyFieldAccess } from '@/access/customerOnlyFieldAccess'
@@ -51,6 +52,7 @@ export const plugins: any[] = [
         ],
       }),
     },
+
     currencies: {
       supportedCurrencies: [
         {
@@ -68,15 +70,16 @@ export const plugins: any[] = [
       ],
       defaultCurrency: 'INR',
     },
-    // payments: {
-    //   paymentMethods: [
-    //     stripeAdapter({
-    //       secretKey: process.env.STRIPE_SECRET_KEY!,
-    //       publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-    //       webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET!,
-    //     }),
-    //   ],
-    // },
+    payments: {
+      paymentMethods: [
+        stripeAdapter({
+          secretKey: process.env.STRIPE_SECRET_KEY!,
+          publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+          webhookSecret: process.env.STRIPE_WEBHOOKS_SIGNING_SECRET!,
+        }),
+        codAdapter({}),
+      ],
+    },
 
     products: {
       productsCollectionOverride: ProductsCollection,
