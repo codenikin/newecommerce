@@ -4,144 +4,165 @@ import { generateMeta } from '@/lib/generateMeta'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { Metadata } from 'next'
+import { Subcategories } from '@/collections/Subcategories'
 
 export const dynamic = 'force-dynamic'
 
 type SearchParams = { [key: string]: string | string[] | undefined }
 
 type Props = {
-  searchParams: Promise<SearchParams>
+    searchParams: Promise<SearchParams>
 }
 
 export default async function ShopPage({ searchParams }: Props) {
-  const {
-    q: searchValue,
-    sort,
-    category: categoryRaw,
-    subcategories: subcategoriesRaw,
-  } = await searchParams
+    const {
+        q: searchValue,
+        sort,
+        category: categoryRaw,
+        subcategories: subcategoriesRaw,
+        subcategory,
+        brand
+    } = await searchParams
 
-  const payload = await getPayload({ config: configPromise })
+    const payload = await getPayload({ config: configPromise })
 
-  // ----------------------------
-  // SAFE NORMALIZATION
-  // ----------------------------
+    // ----------------------------
+    // SAFE NORMALIZATION
+    // ----------------------------
 
-  const category = typeof categoryRaw === 'string' ? categoryRaw : undefined
+    const category = typeof categoryRaw === 'string' ? categoryRaw : undefined
 
-  const subcategoryIds =
-    typeof subcategoriesRaw === 'string'
-      ? subcategoriesRaw
-          .split(',')
-          .map((id) => id.trim())
-          .filter(Boolean)
-      : []
+    const subcategoryIds =
+        typeof subcategoriesRaw === 'string'
+            ? subcategoriesRaw
+                .split(',')
+                .map((id) => id.trim())
+                .filter(Boolean)
+            : []
 
-  // ----------------------------
-  // BUILD FILTERS
-  // ----------------------------
 
-  const andFilters: any[] = [
-    {
-      _status: {
-        equals: 'published',
-      },
-    },
-  ]
+    // ----------------------------
+    // BUILD FILTERS
+    // ----------------------------
 
-  // search filter
-  if (searchValue) {
-    andFilters.push({
-      or: [
+    const andFilters: any[] = [
         {
-          title: {
-            like: searchValue,
-          },
+            _status: {
+                equals: 'published',
+            },
         },
-        // {
-        //   description: {
-        //     like: searchValue,
-        //   },
-        // },
-      ],
-    })
-  }
+    ]
 
-  // category filter
-  if (category) {
-    andFilters.push({
-      categories: {
-        contains: category,
-      },
-    })
-  }
+    // search filter
+    if (searchValue) {
+        andFilters.push({
+            or: [
+                {
+                    title: {
+                        like: searchValue,
+                    },
+                },
+                // {
+                //   description: {
+                //     like: searchValue,
+                //   },
+                // },
+            ],
+        })
+    }
 
-  // subcategory filter (MULTI SAFE)
-  if (subcategoryIds.length > 0) {
-    andFilters.push({
-      or: subcategoryIds.map((id) => ({
-        subcategories: {
-          contains: String(id),
+    // category filter
+    if (category) {
+        andFilters.push({
+            categories: {
+                contains: category,
+            },
+        })
+    }
+
+    // brand filter
+    if (brand) {
+        andFilters.push({
+            brands: {
+                contains: brand,
+            },
+        })
+    }
+
+    // subcategory filter (MULTI SAFE)
+    if (subcategoryIds.length > 0) {
+        andFilters.push({
+            or: subcategoryIds.map((id) => ({
+                subcategories: {
+                    contains: String(id),
+                },
+            })),
+        })
+    }
+
+    if (subcategory) {
+        andFilters.push({
+            'subcategories.slug': {
+                equals: subcategory
+            }
+        })
+    }
+
+    // ----------------------------
+    // QUERY
+    // ----------------------------
+
+    const products = await payload.find({
+        collection: 'products',
+        draft: false,
+        overrideAccess: false,
+        select: {
+            title: true,
+            description: true,
+            slug: true,
+            gallery: true,
+            categories: true,
+            subcategories: true,
+            brands: true,
+            priceInINR: true,
+            OriginalPrice: true,
+            createdAt: true,
+            updatedAt: true,
         },
-      })),
+        sort: sort || 'title',
+        where: {
+            and: andFilters,
+        },
     })
-  }
 
-  // ----------------------------
-  // QUERY
-  // ----------------------------
+    const resultsText = products.docs.length > 1 ? 'results' : 'result'
 
-  const products = await payload.find({
-    collection: 'products',
-    draft: false,
-    overrideAccess: false,
-    select: {
-      title: true,
-      description: true,
-      slug: true,
-      gallery: true,
-      categories: true,
-      subcategories: true,
-      brand: true,
-      priceInINR: true,
-      OriginalPrice: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-    sort: sort || 'title',
-    where: {
-      and: andFilters,
-    },
-  })
+    return (
+        <div>
+            <Search className="mb-8" />
 
-  const resultsText = products.docs.length > 1 ? 'results' : 'result'
+            {searchValue ? (
+                <p className="mb-4">
+                    {products.docs?.length === 0
+                        ? 'There are no products that match '
+                        : `Showing ${products.docs.length} ${resultsText} for `}
+                    <span className="font-bold">&quot;{searchValue}&quot;</span>
+                </p>
+            ) : null}
 
-  return (
-    <div>
-      <Search className="mb-8" />
+            {!searchValue && products.docs?.length === 0 && (
+                <p className="mb-4">No products found. Please try different filters.</p>
+            )}
 
-      {searchValue ? (
-        <p className="mb-4">
-          {products.docs?.length === 0
-            ? 'There are no products that match '
-            : `Showing ${products.docs.length} ${resultsText} for `}
-          <span className="font-bold">&quot;{searchValue}&quot;</span>
-        </p>
-      ) : null}
-
-      {!searchValue && products.docs?.length === 0 && (
-        <p className="mb-4">No products found. Please try different filters.</p>
-      )}
-
-      {products.docs.length > 0 && (
-        <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 py-3">
-          {products.docs.map((product) => (
-            <ProductGridItem key={product.id} product={product} />
-          ))}
+            {products.docs.length > 0 && (
+                <div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6 py-3">
+                    {products.docs.map((product) => (
+                        <ProductGridItem key={product.id} product={product} />
+                    ))}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  )
+    )
 }
 
 // ----------------------------
@@ -149,10 +170,10 @@ export default async function ShopPage({ searchParams }: Props) {
 // ----------------------------
 
 export async function generateMetadata(): Promise<Metadata> {
-  return generateMeta({
-    title: 'Best Payload CMS templates for your next project',
-    description:
-      'Shop the best Payload CMS templates for your next project. Browse our collection of high-quality templates designed to help you build stunning websites and applications with ease.',
-    doc: null,
-  })
+    return generateMeta({
+        title: 'Best Payload CMS templates for your next project',
+        description:
+            'Shop the best Payload CMS templates for your next project. Browse our collection of high-quality templates designed to help you build stunning websites and applications with ease.',
+        doc: null,
+    })
 }
