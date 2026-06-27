@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
         port: '3000',
         pathname: '/api/media/file/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'www.gravatar.com',
+      },
     ],
   },
   webpack: (webpackConfig) => {

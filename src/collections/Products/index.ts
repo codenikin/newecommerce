@@ -146,6 +146,24 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               },
             },
             {
+              name: 'sku',
+              label: 'SKU',
+              type: 'text',
+
+              unique: true,
+              admin: {
+                description: 'Internal stock keeping unit (e.g. HHO-200)',
+              },
+            },
+            {
+              name: 'mpn',
+              label: 'MPN',
+              type: 'text',
+              admin: {
+                description: 'Manufacturer Part Number (used for Google Shopping and marketplaces)',
+              },
+            },
+            {
               name: 'relatedProducts',
               type: 'relationship',
               filterOptions: ({ id }) => {

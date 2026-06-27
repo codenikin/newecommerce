@@ -1,18 +1,18 @@
 import type { Media, Product } from '@/payload-types'
-
-import { RenderBlocks } from '@/blocks/RenderBlocks'
+import ReviewForm from '@/components/Review/ReviewForm'
 import { GridTileImage } from '@/components/Grid/tile'
-import { Gallery } from '@/components/product/Gallery'
-import { ProductDescription } from '@/components/product/ProductDescription'
 import { Button } from '@/components/ui/button'
 import configPromise from '@payload-config'
 import { ChevronLeftIcon } from 'lucide-react'
 import { Metadata } from 'next'
-import { draftMode } from 'next/headers'
+import { draftMode, headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import React, { Suspense } from 'react'
+import { Gallery } from '@/components/product/Gallery'
+import { ProductDescription } from '@/components/product/ProductDescription'
+import Reviews from '@/components/Reviews'
 
 type Args = {
   params: Promise<{
@@ -23,14 +23,10 @@ type Args = {
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   const product = await queryProductBySlug({ slug })
-
   if (!product) return notFound()
-
   const gallery = product.gallery?.filter((item) => typeof item.image === 'object') || []
-
   const metaImage = typeof product.meta?.image === 'object' ? product.meta?.image : undefined
   const canIndex = product._status === 'published'
-
   const seoImage = metaImage || (gallery.length ? (gallery[0]?.image as Media) : undefined)
 
   return {
@@ -61,9 +57,25 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Args) {
   const { slug } = await params
+  const payload = await getPayload({ config: configPromise })
+  const requestHeaders = await headers()
+  const { user } = await payload.auth({
+    headers: requestHeaders,
+  })
   const product = await queryProductBySlug({ slug })
 
   if (!product) return notFound()
+  const reviewsResult = await payload.find({
+    collection: 'reviews',
+    where: {
+      product: {
+        equals: product.id,
+      },
+    },
+  })
+  const reviews = reviewsResult.docs || []
+  const averageRating =
+    reviews.length > 0 ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length : 0
 
   const gallery =
     product.gallery
@@ -117,31 +129,46 @@ export default async function ProductPage({ params }: Args) {
         }}
         type="application/ld+json"
       />
-      <div className="container pt-8 pb-8">
-        <Button asChild variant="ghost" className="mb-4">
-          <Link href="/shop">
-            <ChevronLeftIcon />
-            All product
-          </Link>
-        </Button>
-        <div className="flex flex-col gap-12 rounded-lg border p-8 md:py-12 lg:flex-row lg:gap-8 bg-primary-foreground">
-          <div className="h-full w-full basis-full lg:basis-1/2">
-            <Suspense
-              fallback={
-                <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
-              }
-            >
-              {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
-            </Suspense>
-          </div>
+      <div className="flex justify-center py-8">
+        <div className="w-full max-w-7xl px-4">
+          <Button asChild variant="ghost" className="mb-4">
+            <Link href="/shop">
+              <ChevronLeftIcon />
+              All product
+            </Link>
+          </Button>
 
-          <div className="basis-full lg:basis-1/2">
-            <ProductDescription product={product} />
+          <div
+            className="  flex flex-col
+    items-center
+    gap-6
+    rounded-xl
+    border
+    bg-primary-foreground
+    p-4
+    sm:p-6
+    md:p-8
+    lg:flex-row
+    lg:gap-12"
+          >
+            <div className="h-full w-full lg:w-1/2 min-w-0">
+              <Suspense fallback={<div className="relative h-full w-full lg:w-1/2 min-w-0" />}>
+                {Boolean(gallery?.length) && <Gallery gallery={gallery} />}
+              </Suspense>
+            </div>
+
+            <div className="w-full lg:w-1/2 min-w-0">
+              <ProductDescription product={product} averageRating={averageRating} />
+            </div>
+          </div>
+          {product?.id && <Reviews productId={String(product.id)} />}
+          <div className="mt-16">
+            <ReviewForm productId={product.id} user={user} />
           </div>
         </div>
       </div>
 
-      {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : <></>}
+      {/* {product.layout?.length ? <RenderBlocks blocks={product.layout} /> : <></>} */}
 
       {relatedProducts.length ? (
         <div className="container">

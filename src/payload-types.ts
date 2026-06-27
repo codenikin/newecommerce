@@ -77,6 +77,7 @@ export interface Config {
     categories: Category;
     brands: Brand;
     subcategories: Subcategory;
+    reviews: Review;
     addresses: Address;
     variants: Variant;
     variantTypes: VariantType;
@@ -116,6 +117,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     brands: BrandsSelect<false> | BrandsSelect<true>;
     subcategories: SubcategoriesSelect<false> | SubcategoriesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     addresses: AddressesSelect<false> | AddressesSelect<true>;
     variants: VariantsSelect<false> | VariantsSelect<true>;
     variantTypes: VariantTypesSelect<false> | VariantTypesSelect<true>;
@@ -311,6 +313,14 @@ export interface Product {
    * Price before any discounts are applied.
    */
   OriginalPrice?: number | null;
+  /**
+   * Internal stock keeping unit (e.g. HHO-200)
+   */
+  sku?: string | null;
+  /**
+   * Manufacturer Part Number (used for Google Shopping and marketplaces)
+   */
+  mpn?: string | null;
   relatedProducts?: (number | Product)[] | null;
   meta?: {
     title?: string | null;
@@ -633,6 +643,24 @@ export interface Address {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  product: number | Product;
+  clientName: string;
+  clientEmail: string;
+  clientPhone?: string | null;
+  clientImage?: (number | null) | Media;
+  rating: number;
+  title: string;
+  content: string;
+  isPublished?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -674,6 +702,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'subcategories';
         value: number | Subcategory;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
       } | null)
     | ({
         relationTo: 'addresses';
@@ -864,6 +896,23 @@ export interface SubcategoriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  product?: T;
+  clientName?: T;
+  clientEmail?: T;
+  clientPhone?: T;
+  clientImage?: T;
+  rating?: T;
+  title?: T;
+  content?: T;
+  isPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "addresses_select".
  */
 export interface AddressesSelect<T extends boolean = true> {
@@ -949,6 +998,8 @@ export interface ProductsSelect<T extends boolean = true> {
   priceInUSDEnabled?: T;
   priceInUSD?: T;
   OriginalPrice?: T;
+  sku?: T;
+  mpn?: T;
   relatedProducts?: T;
   meta?:
     | T

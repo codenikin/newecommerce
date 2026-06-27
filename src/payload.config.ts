@@ -15,6 +15,7 @@ import { Categories } from './collections/Categories'
 import { Brand } from './collections/Brand'
 import { Subcategories } from './collections/Subcategories'
 import { HomePage } from './globals/Homepage'
+import { Reviews } from './collections/Review'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -25,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Brand, Subcategories],
+  collections: [Users, Media, Categories, Brand, Subcategories, Reviews],
   globals: [HomePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
