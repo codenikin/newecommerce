@@ -15,7 +15,7 @@ export const AddressListing: React.FC = () => {
     <div>
       <ul className="flex flex-col gap-8">
         {addresses.map((address) => (
-          <li key={address.id} className="border border-gray-400 pb-8 last:border-none p-4">
+          <li key={address.id} className="border border-gray-300 rounded-lg pb-8  p-4">
             <AddressItem address={address} />
           </li>
         ))}

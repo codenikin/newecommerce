@@ -1,13 +1,11 @@
 'use client'
 
 import type { SortFilterItem as SortFilterItemType } from '@/lib/constants'
-
 import { createUrl } from '@/lib/CreateUrls'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import React from 'react'
-
 import type { ListItem } from '.'
 import type { PathFilterItem as PathFilterItemType } from '.'
 

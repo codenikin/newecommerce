@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
     qualities: [75, 90],
     localPatterns: [
       {
+        pathname: '/**',
+      },
+      {
         pathname: '/api/media/file/**',
       },
       {
@@ -27,6 +30,14 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'www.gravatar.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },

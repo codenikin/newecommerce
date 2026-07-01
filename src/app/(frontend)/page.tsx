@@ -1,8 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { PageClient } from './pageclient'
-import { generateMeta } from '@/lib/generateMeta'
-import { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {

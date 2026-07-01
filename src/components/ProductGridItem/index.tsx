@@ -94,7 +94,7 @@ export function ProductGridItem({ product }: { product: Product }) {
         </a>
       </div>
       <div className="mb-2 ">
-        <span className="block text-2xl font-semibold text-gray-900 mb-0 pt-2">
+        <span className="block text-sm sm:text-base font-semibold text-gray-900 mb-0 pt-2">
           {product.title}
         </span>
         {product.description && (

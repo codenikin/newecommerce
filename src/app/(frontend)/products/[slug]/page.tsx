@@ -13,6 +13,7 @@ import React, { Suspense } from 'react'
 import { Gallery } from '@/components/product/Gallery'
 import { ProductDescription } from '@/components/product/ProductDescription'
 import Reviews from '@/components/Reviews'
+import { CarouselBlock } from '@/components/Carsouel/page'
 
 type Args = {
   params: Promise<{
@@ -120,7 +121,13 @@ export default async function ProductPage({ params }: Args) {
 
   const relatedProducts =
     product.relatedProducts?.filter((relatedProduct) => typeof relatedProduct === 'object') ?? []
-
+  const carouselBlocks =
+    product.layout?.filter(
+      (
+        block,
+      ): block is Extract<NonNullable<Product['layout']>[number], { blockType: 'carousel' }> =>
+        block?.blockType === 'carousel',
+    ) ?? []
   return (
     <React.Fragment>
       <script
@@ -161,6 +168,14 @@ export default async function ProductPage({ params }: Args) {
               <ProductDescription product={product} averageRating={averageRating} />
             </div>
           </div>
+          {carouselBlocks.map((block, index) => (
+            <CarouselBlock
+              key={block.id ?? index}
+              {...block}
+              sectionTitle={block.title ?? `Section ${index + 1}`}
+              seeMoreUrl="/shop"
+            />
+          ))}
           {product?.id && <Reviews productId={String(product.id)} />}
           <div className="mt-16">
             <ReviewForm productId={product.id} user={user} />

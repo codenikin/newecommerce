@@ -2,7 +2,14 @@ import { Block } from 'payload'
 
 export const Carousel: Block = {
   slug: 'carousel',
+
   fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+    },
+
     {
       name: 'populateBy',
       type: 'select',
@@ -18,6 +25,26 @@ export const Carousel: Block = {
         },
       ],
     },
+
+    {
+      name: 'filterBy',
+      type: 'select',
+      defaultValue: 'category',
+      admin: {
+        condition: (_, siblingData) => siblingData.populateBy === 'collection',
+      },
+      options: [
+        {
+          label: 'Category',
+          value: 'category',
+        },
+        {
+          label: 'Brand',
+          value: 'brand',
+        },
+      ],
+    },
+
     {
       name: 'relationTo',
       type: 'select',
@@ -33,16 +60,31 @@ export const Carousel: Block = {
         },
       ],
     },
+
     {
       name: 'categories',
       type: 'relationship',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-      },
+      relationTo: 'categories',
       hasMany: true,
       label: 'Categories To Show',
-      relationTo: 'categories',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData.populateBy === 'collection' && siblingData.filterBy === 'category',
+      },
     },
+
+    {
+      name: 'brands',
+      type: 'relationship',
+      relationTo: 'brands',
+      hasMany: true,
+      label: 'Brands To Show',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData.populateBy === 'collection' && siblingData.filterBy === 'brand',
+      },
+    },
+
     {
       name: 'limit',
       type: 'number',
@@ -53,6 +95,7 @@ export const Carousel: Block = {
       defaultValue: 10,
       label: 'Limit',
     },
+
     {
       name: 'selectedDocs',
       type: 'relationship',
@@ -63,31 +106,10 @@ export const Carousel: Block = {
       label: 'Selection',
       relationTo: ['products'],
     },
-    {
-      name: 'populatedDocs',
-      type: 'relationship',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-        description: 'This field is auto-populated after-read',
-        disabled: true,
-      },
-      hasMany: true,
-      label: 'Populated Docs',
-      relationTo: ['products'],
-    },
-    {
-      name: 'populatedDocsTotal',
-      type: 'number',
-      admin: {
-        condition: (_, siblingData) => siblingData.populateBy === 'collection',
-        description: 'This field is auto-populated after-read',
-        disabled: true,
-        step: 1,
-      },
-      label: 'Populated Docs Total',
-    },
   ],
+
   interfaceName: 'CarouselBlock',
+
   labels: {
     plural: 'Carousels',
     singular: 'Carousel',

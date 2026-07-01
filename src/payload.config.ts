@@ -4,10 +4,10 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
-import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
-import { adminOnlyFieldAccess } from '@/access/adminOnlyFieldAccess'
-import { isAdmin } from '@/access/isAdmin'
-import { isDocumentOwner } from '@/access/isDocumentOwner'
+// import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
+// import { adminOnlyFieldAccess } from '@/access/adminOnlyFieldAccess'
+// import { isAdmin } from '@/access/isAdmin'
+// import { isDocumentOwner } from '@/access/isDocumentOwner'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { plugins } from './plugins'
@@ -16,9 +16,9 @@ import { Brand } from './collections/Brand'
 import { Subcategories } from './collections/Subcategories'
 import { HomePage } from './globals/Homepage'
 import { Reviews } from './collections/Review'
+import { Pages } from './collections/Page'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -26,7 +26,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Brand, Subcategories, Reviews],
+  collections: [Pages, Users, Media, Categories, Brand, Subcategories, Reviews],
   globals: [HomePage],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

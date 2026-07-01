@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-async function CategoryList() {
+export async function CategoryList() {
   const payload = await getPayload({ config: configPromise })
 
   const categories = await payload.find({
@@ -38,12 +38,15 @@ async function CategoryList() {
                   className="
                 inline-flex items-center gap-2
                 rounded-md 
-                px-0 py-2 text-base font-medium
+                px-4 py-2 text-base font-medium
                 transition-colors
                 border-none
                
               "
                 >
+                  <span className="mr-2 text-slate-300 transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
                   <CategoryItem category={category as Category} />
                 </button>
               </DropdownMenuTrigger>
@@ -52,7 +55,7 @@ async function CategoryList() {
                 <DropdownMenuContent
                   align="start"
                   sideOffset={8}
-                  className="w-64 overflow-hidden rounded-xl"
+                  className="w-72 overflow-hidden rounded-sm"
                 >
                   {/* <div className="border-b bg-muted/50 px-4 py-3">
                     <h4 className="font-medium">{category.title}</h4>
@@ -77,6 +80,9 @@ async function CategoryList() {
                           hover:bg-accent
                         "
                           >
+                            <span className="mr-2 text-slate-300 transition-transform duration-300 group-hover:translate-x-1">
+                              →
+                            </span>
                             <SubcategoryItem subcategory={subcategory} />
                           </Link>
                         </DropdownMenuItem>

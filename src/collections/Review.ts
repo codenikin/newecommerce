@@ -1,9 +1,8 @@
 import type { CollectionConfig } from 'payload'
 import { publicAccess } from '@/access/publicAccess'
-
+import { updateProductRating } from '@/lib/updateProductRating'
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
-
   access: {
     read: publicAccess,
     create: ({ req }) => {
@@ -76,4 +75,17 @@ export const Reviews: CollectionConfig = {
       },
     },
   ],
+
+  hooks: {
+    afterOperation: [
+      async ({ operation, result, req }) => {
+        if (operation !== 'create') return
+        const productId = typeof result.product === 'object' ? result.product.id : result.product
+        if (!productId) return
+        setTimeout(async () => {
+          await updateProductRating(req.payload, productId)
+        }, 0)
+      },
+    ],
+  },
 }

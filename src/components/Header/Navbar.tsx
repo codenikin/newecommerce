@@ -208,25 +208,29 @@ export default function Navbar({ className, type, categoryData }: Props) {
                 </li>
                 <li className="relative group py-5">
                   {/* MAIN LINK */}
-                  <span
-                    className={`flex items-center text-sm font-semibold cursor-pointer ${
-                      type === 3 ? 'text-white' : 'text-black'
-                    }`}
-                  >
-                    Contact
-                    <Arrow className="ml-2 w-3 h-3" />
-                  </span>
+                  <Link href="/contact">
+                    <span
+                      className={`flex items-center text-sm font-semibold cursor-pointer ${
+                        type === 3 ? 'text-white' : 'text-black'
+                      }`}
+                    >
+                      Contact
+                      <Arrow className="ml-2 w-3 h-3" />
+                    </span>
+                  </Link>
                 </li>
                 <li className="relative group py-5">
                   {/* MAIN LINK */}
-                  <span
-                    className={`flex items-center text-sm font-semibold cursor-pointer ${
-                      type === 3 ? 'text-white' : 'text-black'
-                    }`}
-                  >
-                    About
-                    <Arrow className="ml-2 w-3 h-3" />
-                  </span>
+                  <Link href="/about">
+                    <span
+                      className={`flex items-center text-sm font-semibold cursor-pointer ${
+                        type === 3 ? 'text-white' : 'text-black'
+                      }`}
+                    >
+                      About
+                      <Arrow className="ml-2 w-3 h-3" />
+                    </span>
+                  </Link>
                 </li>
               </ul>
             </div>

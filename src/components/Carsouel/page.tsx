@@ -1,5 +1,4 @@
 import type { Product, CarouselBlock as CarouselBlockProps } from '@/payload-types'
-
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'

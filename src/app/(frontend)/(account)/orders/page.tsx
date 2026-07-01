@@ -38,8 +38,8 @@ export default async function Orders() {
   return (
     <>
       <div className="w-full">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2 border border-primary p-4 rounded-lg">
+        <div className="bg-white rounded-xl border  shadow-sm p-6">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2 border border-gray-300 p-4 rounded-lg">
             Orders
           </h1>
 
@@ -48,11 +48,11 @@ export default async function Orders() {
           )}
 
           {orders && orders.length > 0 && (
-            <ul className="flex flex-col divide-y divide-gray-100 gap-2 ">
+            <ul className="flex flex-col divide-y  gap-2 ">
               {orders.map((order) => (
                 <li
                   key={order.id}
-                  className="py-4 first:pt-0 last:pb-0 border border-primary rounded-lg"
+                  className="py-4 first:pt-0 last:pb-0 border border-gray-300 rounded-lg"
                 >
                   <OrderItem order={order} />
                 </li>

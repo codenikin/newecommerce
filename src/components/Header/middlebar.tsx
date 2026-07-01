@@ -86,7 +86,7 @@ export default function Middlebar({ className = '', type }: Props) {
 
               {/* PROFILE */}
               <div>
-                <Link href="/profile">
+                <Link href="/account">
                   <span>
                     <ThinPeople />
                   </span>

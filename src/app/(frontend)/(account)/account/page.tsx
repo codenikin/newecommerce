@@ -68,7 +68,7 @@ export default async function AccountPage() {
         {orders && orders.length > 0 && (
           <ul className="flex flex-col gap-6 mb-8 ">
             {orders?.map((order, index) => (
-              <li className="border border-primary rounded-lg p-4" key={order.id}>
+              <li className="border border-gray-300 rounded-lg p-4" key={order.id}>
                 <OrderItem order={order} />
               </li>
             ))}

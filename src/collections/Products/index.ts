@@ -14,6 +14,7 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { DefaultDocumentIDType, slugField, Where } from 'payload'
+import { Carousel } from '@/blocks/Carsouel'
 
 export const ProductsCollection: CollectionOverride = ({ defaultCollection }) => ({
   ...defaultCollection,
@@ -125,11 +126,11 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               ],
             },
 
-            // {
-            //   name: 'layout',
-            //   type: 'blocks',
-            //   blocks: [CallToAction, Content, MediaBlock],
-            // },
+            {
+              name: 'layout',
+              type: 'blocks',
+              blocks: [Carousel],
+            },
           ],
           label: 'Content',
         },
@@ -161,6 +162,25 @@ export const ProductsCollection: CollectionOverride = ({ defaultCollection }) =>
               type: 'text',
               admin: {
                 description: 'Manufacturer Part Number (used for Google Shopping and marketplaces)',
+              },
+            },
+            {
+              name: 'averageRating',
+              type: 'number',
+              defaultValue: 0,
+              admin: {
+                readOnly: true,
+                position: 'sidebar',
+              },
+            },
+
+            {
+              name: 'reviewCount',
+              type: 'number',
+              defaultValue: 0,
+              admin: {
+                readOnly: true,
+                position: 'sidebar',
               },
             },
             {

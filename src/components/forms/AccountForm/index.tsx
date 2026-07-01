@@ -114,7 +114,7 @@ export const AccountForm: React.FC = () => {
                 Email Address
               </Label>
               <Input
-                className="border border-primary"
+                className="border border-gray-300"
                 id="email"
                 {...register('email', { required: 'Please provide an email.' })}
                 type="email"
@@ -127,7 +127,7 @@ export const AccountForm: React.FC = () => {
                 Name
               </Label>
               <Input
-                className="border border-primary"
+                className="border border-gray-300"
                 id="name"
                 {...register('name', { required: 'Please provide a name.' })}
                 type="text"

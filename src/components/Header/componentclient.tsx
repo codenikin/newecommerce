@@ -14,10 +14,10 @@ export const HeaderClient = ({ CategoryData }: HeaderProps) => {
         <TopBar />
         <Middlebar />
       </div>
-      <Navbar
+      {/* <Navbar
         className="quomodo-shop-nav-bar lg:block hidden"
         categoryData={CategoryData?.docs ?? []}
-      />
+      /> */}
     </>
   )
 }

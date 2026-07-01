@@ -72,6 +72,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    pages: Page;
     users: User;
     media: Media;
     categories: Category;
@@ -112,6 +113,7 @@ export interface Config {
     };
   };
   collectionsSelect: {
+    pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
@@ -184,6 +186,48 @@ export interface UserAuthOperations {
     email: string;
     password: string;
   };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  layout?: ContentBlock[] | null;
+  title: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock".
+ */
+export interface ContentBlock {
+  columns?:
+    | {
+        size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'content';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -297,6 +341,7 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  layout?: CarouselBlock[] | null;
   inventory?: number | null;
   enableVariants?: boolean | null;
   variantTypes?: (number | VariantType)[] | null;
@@ -321,6 +366,8 @@ export interface Product {
    * Manufacturer Part Number (used for Google Shopping and marketplaces)
    */
   mpn?: string | null;
+  averageRating?: number | null;
+  reviewCount?: number | null;
   relatedProducts?: (number | Product)[] | null;
   meta?: {
     title?: string | null;
@@ -408,38 +455,25 @@ export interface VariantType {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "variants".
+ * via the `definition` "CarouselBlock".
  */
-export interface Variant {
-  id: number;
-  /**
-   * Used for administrative purposes, not shown to customers. This is populated by default.
-   */
-  title?: string | null;
-  product: number | Product;
-  options: (number | VariantOption)[];
-  inventory?: number | null;
-  priceInINREnabled?: boolean | null;
-  priceInINR?: number | null;
-  priceInUSDEnabled?: boolean | null;
-  priceInUSD?: number | null;
-  updatedAt: string;
-  createdAt: string;
-  deletedAt?: string | null;
-  _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "brands".
- */
-export interface Brand {
-  id: number;
+export interface CarouselBlock {
   title: string;
-  description: string;
-  brandImage?: (number | null) | Media;
-  products?: (number | Product)[] | null;
-  updatedAt: string;
-  createdAt: string;
+  populateBy?: ('collection' | 'selection') | null;
+  filterBy?: ('category' | 'brand') | null;
+  relationTo?: 'products' | null;
+  categories?: (number | Category)[] | null;
+  brands?: (number | Brand)[] | null;
+  limit?: number | null;
+  selectedDocs?:
+    | {
+        relationTo: 'products';
+        value: number | Product;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carousel';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -509,6 +543,46 @@ export interface Subcategory {
   slug: string;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "brands".
+ */
+export interface Brand {
+  id: number;
+  title: string;
+  description: string;
+  brandImage?: (number | null) | Media;
+  products?: (number | Product)[] | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "variants".
+ */
+export interface Variant {
+  id: number;
+  /**
+   * Used for administrative purposes, not shown to customers. This is populated by default.
+   */
+  title?: string | null;
+  product: number | Product;
+  options: (number | VariantOption)[];
+  inventory?: number | null;
+  priceInINREnabled?: boolean | null;
+  priceInINR?: number | null;
+  priceInUSDEnabled?: boolean | null;
+  priceInUSD?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -684,6 +758,10 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
@@ -783,6 +861,36 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  layout?:
+    | T
+    | {
+        content?: T | ContentBlockSelect<T>;
+      };
+  title?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock_select".
+ */
+export interface ContentBlockSelect<T extends boolean = true> {
+  columns?:
+    | T
+    | {
+        size?: T;
+        richText?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -876,6 +984,8 @@ export interface BrandsSelect<T extends boolean = true> {
   description?: T;
   brandImage?: T;
   products?: T;
+  generateSlug?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -989,6 +1099,11 @@ export interface ProductsSelect<T extends boolean = true> {
         variantOption?: T;
         id?: T;
       };
+  layout?:
+    | T
+    | {
+        carousel?: T | CarouselBlockSelect<T>;
+      };
   inventory?: T;
   enableVariants?: T;
   variantTypes?: T;
@@ -1000,6 +1115,8 @@ export interface ProductsSelect<T extends boolean = true> {
   OriginalPrice?: T;
   sku?: T;
   mpn?: T;
+  averageRating?: T;
+  reviewCount?: T;
   relatedProducts?: T;
   meta?:
     | T
@@ -1017,6 +1134,22 @@ export interface ProductsSelect<T extends boolean = true> {
   createdAt?: T;
   deletedAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock_select".
+ */
+export interface CarouselBlockSelect<T extends boolean = true> {
+  title?: T;
+  populateBy?: T;
+  filterBy?: T;
+  relationTo?: T;
+  categories?: T;
+  brands?: T;
+  limit?: T;
+  selectedDocs?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1177,7 +1310,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Homepage {
   id: number;
   title: string;
-  layout?: CarouselBlock[] | null;
+  layout?: (CarouselBlock | ProductDisplayBlock)[] | null;
   meta?: {
     title?: string | null;
     /**
@@ -1207,35 +1340,30 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CarouselBlock".
+ * via the `definition` "ProductDisplayBlock".
  */
-export interface CarouselBlock {
+export interface ProductDisplayBlock {
+  title: string;
+  /**
+   * For better results, use an image with a resolution (330x615)
+   */
+  sideImage?: (number | null) | Media;
   populateBy?: ('collection' | 'selection') | null;
-  relationTo?: 'products' | null;
+  filterBy?: ('category' | 'brand' | 'popular' | 'new' | 'sale') | null;
   categories?: (number | Category)[] | null;
-  limit?: number | null;
+  brands?: (number | Brand)[] | null;
   selectedDocs?:
     | {
         relationTo: 'products';
         value: number | Product;
       }[]
     | null;
-  /**
-   * This field is auto-populated after-read
-   */
-  populatedDocs?:
-    | {
-        relationTo: 'products';
-        value: number | Product;
-      }[]
-    | null;
-  /**
-   * This field is auto-populated after-read
-   */
-  populatedDocsTotal?: number | null;
+  limit?: number | null;
+  columns?: ('2' | '3' | '4' | '6') | null;
+  showBadge?: boolean | null;
   id?: string | null;
   blockName?: string | null;
-  blockType: 'carousel';
+  blockType: 'productDisplay';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1247,6 +1375,7 @@ export interface HomepageSelect<T extends boolean = true> {
     | T
     | {
         carousel?: T | CarouselBlockSelect<T>;
+        productDisplay?: T | ProductDisplayBlockSelect<T>;
       };
   meta?:
     | T
@@ -1268,16 +1397,19 @@ export interface HomepageSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "CarouselBlock_select".
+ * via the `definition` "ProductDisplayBlock_select".
  */
-export interface CarouselBlockSelect<T extends boolean = true> {
+export interface ProductDisplayBlockSelect<T extends boolean = true> {
+  title?: T;
+  sideImage?: T;
   populateBy?: T;
-  relationTo?: T;
+  filterBy?: T;
   categories?: T;
-  limit?: T;
+  brands?: T;
   selectedDocs?: T;
-  populatedDocs?: T;
-  populatedDocsTotal?: T;
+  limit?: T;
+  columns?: T;
+  showBadge?: T;
   id?: T;
   blockName?: T;
 }

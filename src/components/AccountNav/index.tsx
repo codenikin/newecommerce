@@ -49,7 +49,7 @@ function NavItem({ href, active, danger, children }: NavItemProps) {
     <Link
       href={href}
       className={clsx(
-        'px-2 py-2 md:px-3 rounded-lg border border-primary font-medium transition text-center',
+        'px-2 py-2 md:px-3 rounded-lg border border-gray-300 font-medium transition text-center',
         {
           'bg-gray-100 text-gray-900': active && !danger,
           'text-gray-600 hover:bg-gray-50 hover:text-gray-900': !active && !danger,

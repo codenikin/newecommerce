@@ -1,7 +1,5 @@
 import type { SortFilterItem } from '@/lib/constants'
-
 import React, { Suspense } from 'react'
-
 import { FilterItemDropdown } from './FilterItemDropdown'
 import { FilterItem } from './FilterItem'
 export type ListItem = PathFilterItem | SortFilterItem

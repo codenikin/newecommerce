@@ -7,6 +7,7 @@ import {
   MetaTitleField,
   OverviewField,
 } from '@payloadcms/plugin-seo/fields'
+import { ProductDisplay } from '@/blocks/Productgrid'
 export const HomePage: GlobalConfig = {
   slug: 'homepage',
   fields: [
@@ -15,7 +16,7 @@ export const HomePage: GlobalConfig = {
     {
       name: 'layout',
       type: 'blocks',
-      blocks: [Carousel],
+      blocks: [Carousel, ProductDisplay],
     },
     {
       type: 'tabs',

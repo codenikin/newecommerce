@@ -1,24 +1,24 @@
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 import { Card, CardFooter } from '@/components/ui/Card'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
+import { Star } from 'lucide-react'
 import { ShineBorder } from '@/components/ui/shine-border'
 import { Badge } from '@/components/ui/badge'
-import { Product } from '@/payload-types'
 import { AddToCart } from '../Cart/AddToCart'
-import clsx from 'clsx'
+import { Product } from '@/payload-types'
 
 interface ProductCardStyleOneProps {
-  datas: any
+  datas: Product
   productDocs: any
 }
 export default function ProductCardStyleOne({ datas }: ProductCardStyleOneProps) {
-  const available =
-    (datas.cam_product_sale / (datas.cam_product_available + datas.cam_product_sale)) * 100
+  const stock = datas?.inventory ?? 0
+  const averageRating = datas?.averageRating ?? 0
+  const isNew = datas.createdAt
+    ? Date.now() - new Date(datas.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
+    : false
   const hasOriginalPrice = Boolean(datas.OriginalPrice)
   const image = datas.gallery?.[0]?.image
-  const brand = datas.brands?.[0]
   const imageUrl = typeof image === 'object' && image !== null ? image?.sizes?.thumbnail?.url : null
   return (
     <Card className="overflow-hidden p-0 group relative">
@@ -40,19 +40,53 @@ export default function ProductCardStyleOne({ datas }: ProductCardStyleOneProps)
               className="object-fill w-full h-full group-hover:scale-105 transition-transform duration-300 ease-in-out rounded-t-lg"
             />
           ) : null}
-          <div className="absolute top-4 right-4 flex gap-1">
+          {/* <div className="absolute top-4 right-4 flex gap-1">
             {datas.OriginalPrice && <Badge variant="destructive">Sale</Badge>}
-            {datas.OriginalPrice && (
-              <Badge className="font-bold" variant="destructive">
+            {isNew && (
+              <Badge variant="sale" className="font-bold">
                 New
               </Badge>
             )}
-          </div>
+          </div> */}
+          {datas.OriginalPrice && (
+            <div className="absolute top-4 left-4 z-10">
+              <Badge variant="destructive">Sale</Badge>
+            </div>
+          )}
+
+          {/* New badge - Top Right */}
+          {isNew && (
+            <div className="absolute top-4 right-4 z-10">
+              <Badge variant="sale" className="font-bold">
+                New
+              </Badge>
+            </div>
+          )}
         </div>
+        <Badge className="ml-2" variant={stock > 0 ? 'secondary' : 'destructive'}>
+          {stock > 0 ? `${stock} in stock` : 'Out of stock'}
+        </Badge>
       </Link>
+      <div className="flex items-center text-orange-400 my-1 gap-[1px] ml-2">
+        {[...Array(5)].map((_, i) => {
+          const filled = i < Math.round(averageRating)
+
+          return (
+            <Star
+              key={i}
+              size={14}
+              className={filled ? 'fill-orange-400 text-orange-400' : 'text-gray-300'}
+            />
+          )
+        })}
+
+        <span className="text-gray-700 text-sm font-medium ml-2 leading-6">
+          {averageRating.toFixed(1)} Reviews
+        </span>
+      </div>
       <CardFooter className="flex flex-col items-start p-4 py-0 ">
-        <h3 className="font-bold sm:text-lg truncate w-full">{datas.title}</h3>
-        <div className="flex justify-between w-full">
+        <h3 className="font-bold sm:text-base text-sm truncate w-full">{datas.title}</h3>
+        <div className="flex justify-between w-full py-4">
           {datas?.brands?.[0] && typeof datas.brands[0] !== 'number' && (
             <Badge variant="secondary">{datas.brands[0].title}</Badge>
           )}
@@ -65,7 +99,7 @@ export default function ProductCardStyleOne({ datas }: ProductCardStyleOneProps)
                 ₹{Number(datas.priceInINR).toLocaleString('en-IN')}
               </>
             ) : (
-              <p className="font-semibold text-lg">₹{datas.priceInINR}</p>
+              <p className=" text-lg md:text-xl font-semibold">₹{datas.priceInINR}</p>
             )}
           </div>
         </div>

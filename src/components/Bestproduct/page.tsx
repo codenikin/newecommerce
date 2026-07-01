@@ -1,17 +1,8 @@
 'use client'
-import { useState } from 'react'
 import CategoryCard from '@/components/cards/CategoryCard'
 import ProductCardStyleOne from '@/components/cards/ProdcuctsCards'
 import ViewMoreTitle from './Viewtitlemore'
-import { Brand } from '@/payload-types'
-interface Product {
-  id: string
-  title: string
-  slug: string
-  brand: Brand[]
-  price: number
-  image: string
-}
+import { Brand, Product } from '@/payload-types'
 
 interface SectionStyleOneProps {
   className?: string
@@ -19,11 +10,7 @@ interface SectionStyleOneProps {
   sectionTitle: string
   seeMoreUrl: string
   brands: Brand[]
-  products:
-    | {
-        docs?: Product[]
-      }
-    | Product[]
+  products: Product[]
   categoryBackground?: string
 }
 export default function SectionStyleOne({
@@ -34,17 +21,19 @@ export default function SectionStyleOne({
   brands = [],
   products,
   categoryBackground,
-}: SectionStyleOneProps & { brands: Brand[]; products: any; categoryBackground: string }) {
+}: SectionStyleOneProps & { brands: Brand[]; products: Product[]; categoryBackground: string }) {
   const filterBrands = Array.from(new Map(brands.map((brand) => [brand.id, brand])).values())
-  const [productLength] = useState(3)
-  const productDocs = products?.docs || products || []
 
   return (
     <div className={`section-style-one ${className || ''}`}>
       <ViewMoreTitle categoryTitle={sectionTitle} seeMoreUrl={seeMoreUrl}>
         <div className="products-section w-full">
-          <div className="grid xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-2 xl:gap-[30px] gap-5">
-            <div className="category-card hidden xl:block w-full">
+          <div className="flex gap-5 xl:gap-[30px]">
+            {/* Category Card */}
+            <div className="hidden xl:flex w-[200px] shrink-0 flex-col gap-4">
+              {/* Image on top */}
+
+              {/* Category card below */}
               <CategoryCard
                 background={categoryBackground}
                 title={categoryTitle}
@@ -52,28 +41,14 @@ export default function SectionStyleOne({
               />
             </div>
 
-            {productDocs.map((datas: any) => (
-              <ProductCardStyleOne datas={datas} key={datas.id} productDocs={productDocs} />
-            ))}
-
-            {/* {productDocs.map((datas: any) => (
-              <div key={datas.id}>
-                <ProductCardStyleOne datas={datas} productDocs={productDocs} />
+            {/* Products Grid */}
+            <div className="flex-1">
+              <div className="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-5 xl:gap-[30px]">
+                {products.map((datas: Product) => (
+                  <ProductCardStyleOne key={datas.id} datas={datas} productDocs={products} />
+                ))}
               </div>
-            ))} */}
-            {/* <DataIteration datas={productDocs} startLength={0} endLength={productLength}>
-              {({ datas }: { datas: any }) => (
-                <div key={datas.id} className="item">
-                  <ProductCardStyleOne datas={datas} productDocs={productDocs} />
-                </div>
-              )}
-            </DataIteration> */}
-            {/* {productDocs.map((product: any) => (
-              <div key={product.id} className="border p-4">
-                <h3>{product.title}</h3>
-                <p>₹{product.priceInINR}</p>
-              </div>
-            ))} */}
+            </div>
           </div>
         </div>
       </ViewMoreTitle>

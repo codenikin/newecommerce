@@ -3,9 +3,7 @@
 import { ChevronDownIcon } from 'lucide-react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
-
 import type { ListItem } from '.'
-
 import { FilterItem } from './FilterItem'
 
 export function FilterItemDropdown({ list }: { list: ListItem[] }) {

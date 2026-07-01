@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { CollectionConfig, slugField } from 'payload'
 import { adminOnly } from '@/access/adminOnly'
 export const Brand: CollectionConfig = {
   slug: 'brands',
@@ -37,5 +37,6 @@ export const Brand: CollectionConfig = {
         readOnly: true,
       },
     },
+    slugField(),
   ],
 }

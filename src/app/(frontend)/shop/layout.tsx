@@ -1,10 +1,8 @@
 import { Brand } from '@/components/layout/search/Brand'
-import { Categories } from '@/components/layout/search/Categories'
+import { Categories } from '@/components/layout/search/Categories '
 import { FilterList } from '@/components/layout/search/filter'
 import { PriceRangeSlider } from '@/components/Rangeslider'
-import { Search } from '@/components/Search'
-import { Checkbox } from '@/components/ui/checkbox'
-import { checkbox } from 'node_modules/payload/dist/fields/validations'
+
 import React, { Suspense } from 'react'
 
 const sorting = [

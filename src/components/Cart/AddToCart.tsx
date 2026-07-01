@@ -115,7 +115,7 @@ export function AddToCart({ product, className, size, variant }: Props) {
       onClick={addToCart}
       type="submit"
     >
-      Add To Cart
+      add to cart
     </Button>
   )
 }
